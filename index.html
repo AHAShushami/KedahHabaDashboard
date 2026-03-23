@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pemantauan Penyakit Berkaitan Haba — Negeri Kedah</title>
+    <meta name="description" content="Sistem pemantauan penyakit berkaitan haba secara langsung untuk Negeri Kedah oleh CPRC & Unit KPAS, Jabatan Kesihatan Negeri Kedah.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loader-container">
+            <div class="loader-ring"></div>
+            <div class="loader-text">Memuatkan Data...</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-group">
+                    <div class="logo-icon" style="background: white; padding: 0.2rem; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <img src="https://i0.wp.com/sebenarnya.my/wp-content/uploads/2017/06/Logo-KKM-e1518677887552.jpg?fit=400%2C216&ssl=1" alt="Logo KKM" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <div class="header-titles">
+                        <h1>Pemantauan Penyakit Berkaitan Haba</h1>
+                        <p class="header-subtitle">CPRC Negeri Kedah &bull; Unit Kesihatan Pekerjaan & Alam Sekitar (KPAS)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    <span>MASA NYATA</span>
+                </div>
+                <div class="header-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="live-clock">--:--:--</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-sync-alt"></i>
+                        <span id="last-refresh">Belum dimuat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Date Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="fas fa-calendar-alt"></i> Dari:</label>
+                <input type="date" id="filter-date-start" class="filter-input">
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-calendar-alt"></i> Hingga:</label>
+                <input type="date" id="filter-date-end" class="filter-input">
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-hospital"></i> Daerah:</label>
+                <select id="filter-district" class="filter-input">
+                    <option value="all">Semua Daerah</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-stethoscope"></i> Diagnosis:</label>
+                <select id="filter-diagnosis" class="filter-input">
+                    <option value="all">Semua Diagnosis</option>
+                    <option value="Kejang Haba">Kejang Haba</option>
+                    <option value="Kelesuan Haba">Kelesuan Haba</option>
+                    <option value="Strok Haba">Strok Haba</option>
+                    <option value="Patukan Ular">Patukan Ular</option>
+                </select>
+            </div>
+            <button id="btn-reset-filter" class="btn-filter btn-reset"><i class="fas fa-undo"></i> Set Semula</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <section class="kpi-section">
+            <div class="kpi-card kpi-total" id="kpi-total">
+                <div class="kpi-icon"><i class="fas fa-clipboard-list"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-target="0">0</span>
+                    <span class="kpi-label">Jumlah Kes</span>
+                </div>
+            </div>
+            <div class="kpi-card kpi-cramps" id="kpi-cramps">
+                <div class="kpi-icon"><i class="fas fa-bolt"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-target="0">0</span>
+                    <span class="kpi-label">Kejang Haba</span>
+                    <span class="kpi-sub">Heat Cramps</span>
+                </div>
+            </div>
+            <div class="kpi-card kpi-exhaustion" id="kpi-exhaustion">
+                <div class="kpi-icon"><i class="fas fa-temperature-high"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-target="0">0</span>
+                    <span class="kpi-label">Kelesuan Haba</span>
+                    <span class="kpi-sub">Heat Exhaustion</span>
+                </div>
+            </div>
+            <div class="kpi-card kpi-stroke" id="kpi-stroke">
+                <div class="kpi-icon"><i class="fas fa-heartbeat"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-target="0">0</span>
+                    <span class="kpi-label">Strok Haba</span>
+                    <span class="kpi-sub">Heat Stroke</span>
+                </div>
+            </div>
+            <div class="kpi-card kpi-snake" id="kpi-snake">
+                <div class="kpi-icon"><i class="fas fa-staff-snake"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-target="0">0</span>
+                    <span class="kpi-label">Patukan Ular</span>
+                    <span class="kpi-sub">Snake Bite</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="chart-card chart-wide">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Trend Kes Mengikut Masa</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-trend"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-pie"></i> Taburan Diagnosis</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-diagnosis"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-map-marker-alt"></i> Kes Mengikut Daerah</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-district"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-users"></i> Kumpulan Umur</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-age"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-venus-mars"></i> Jantina & Rawatan</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="chart-gender-treatment"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs for 3 Borang KKM -->
+        <section class="tabs-section">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="tab-cpbh" id="tab-btn-cpbh">
+                    <i class="fas fa-table"></i>
+                    <span>Reten Pemantauan</span>
+                    <small>CP-PBH/SKPAS/KKM/02/2021</small>
+                </button>
+                <button class="tab-btn" data-tab="tab-cpll" id="tab-btn-cpll">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Line Listing</span>
+                    <small>CP-LL/SKPAS/KKM/01/2021</small>
+                </button>
+                <button class="tab-btn" data-tab="tab-cppu" id="tab-btn-cppu">
+                    <i class="fas fa-staff-snake"></i>
+                    <span>Reten Patukan Ular</span>
+                    <small>CP-PU/KPAS/KKM/03/2021</small>
+                </button>
+            </div>
+
+            <!-- Tab 1: Reten Pemantauan CP-PBH -->
+            <div class="tab-content active" id="tab-cpbh">
+                <div class="card-header">
+                    <h3><i class="fas fa-file-medical-alt"></i> Format Reten Pemantauan Penyakit Berkaitan Haba</h3>
+                    <p class="card-subtitle">Borang CP-PBH/SKPAS/KKM/02/2021</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table borang-table" id="table-cpbh">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="th-diagnosis">Klasifikasi Diagnosa</th>
+                                <th colspan="2" class="th-gender">Jantina</th>
+                                <th colspan="4" class="th-age">Kumpulan Umur</th>
+                                <th colspan="2" class="th-treatment">Status Rawatan</th>
+                                <th colspan="4" class="th-comorbid">Komorbiditi</th>
+                                <th rowspan="2" class="th-total">Jumlah</th>
+                            </tr>
+                            <tr>
+                                <th>L</th><th>P</th>
+                                <th>&lt;5</th><th>5-12</th><th>13-64</th><th>≥65</th>
+                                <th>P. Luar</th><th>Wad</th>
+                                <th>DM</th><th>HPT</th><th>IHD</th><th>ESRF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-cpbh">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Scorecard Per Daerah CP-LL -->
+            <div class="tab-content" id="tab-cpll">
+                <div class="card-header">
+                    <h3><i class="fas fa-th-large"></i> Scorecard Kes Mengikut Daerah</h3>
+                    <p class="card-subtitle">Borang CP-LL/SKPAS/KKM/01/2021 — Format Scorecard</p>
+                </div>
+                <div class="scorecard-grid" id="scorecard-container">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Tab 3: Reten Patukan Ular CP-PU -->
+            <div class="tab-content" id="tab-cppu">
+                <div class="card-header">
+                    <h3><i class="fas fa-staff-snake"></i> Format Reten Kes Patukan Ular Semasa Cuaca Panas</h3>
+                    <p class="card-subtitle">Borang CP-PU/KPAS/KKM/03/2021</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table borang-table" id="table-cppu">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Tarikh</th>
+                                <th colspan="2" class="th-gender">Jantina</th>
+                                <th colspan="4" class="th-age">Kumpulan Umur</th>
+                                <th colspan="2" class="th-treatment">Status Rawatan</th>
+                                <th rowspan="2" class="th-total">Jumlah</th>
+                            </tr>
+                            <tr>
+                                <th>L</th><th>P</th>
+                                <th>&lt;5</th><th>5-12</th><th>13-64</th><th>≥65</th>
+                                <th>P. Luar</th><th>Wad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-cppu">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <i class="fas fa-shield-virus"></i>
+                <span>Jabatan Kesihatan Negeri Kedah — Unit Kesihatan Pekerjaan & Alam Sekitar (KPAS)</span>
+            </div>
+            <div class="footer-right">
+                <span>Kementerian Kesihatan Malaysia &copy; 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
